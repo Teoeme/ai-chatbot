@@ -70,7 +70,7 @@ Sigue estas reglas estrictamente. No te desvíes de ellas.
     private fileManager: GoogleAIFileManager;
     constructor() {
         this.genAi = new GoogleGenerativeAI(config.geminiApiKey!);
-        this.model = this.genAi.getGenerativeModel({ model: "gemini-pro" });
+        this.model = this.genAi.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
         this.fileManager = new GoogleAIFileManager(config.geminiApiKey!);
     }
 
