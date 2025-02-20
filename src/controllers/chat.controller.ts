@@ -37,7 +37,7 @@ export const transcribeController = async (req: Request, res: Response) => {
             return res.status(422).json({ error: 'No se pudo transcribir el audio' });
         }
 
-        res.json({ transcription });
+        res.json({ response:transcription });
     } catch (error) {
         res.status(500).json({ error: 'Error al transcribir el audio' });
     }
