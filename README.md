@@ -14,7 +14,7 @@ API de chatbot inteligente construida con Node.js, Express y Google Gemini AI, c
 
 1. Clonar el repositorio:
 bash
-git clone https://github.com/tu-usuario/ai-chatbot.git
+git clone https://github.com/Teoeme/ai-chatbot.git
 cd ai-chatbot
 2. Instalar dependencias:
 bash
