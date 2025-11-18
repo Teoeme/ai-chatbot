@@ -7,6 +7,8 @@ import { unlink } from 'fs/promises';
 import { writeFile } from 'fs/promises';
 import { FileState, UploadFileResponse } from '@google/generative-ai/server';
 import { UploadedFile } from '../types/files.types';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export class GeminiService {
     private initialPrompt = `
@@ -74,6 +76,33 @@ Sigue estas reglas estrictamente. No te desvíes de ellas.
         this.fileManager = new GoogleAIFileManager(config.geminiApiKey!);
     }
 
+    async fetchBasePrompt(){
+        if(!process.env.CONFIG_API_URL){
+            throw new Error('No se encontro la URL de la API de configuracion');
+        }
+
+        if(!process.env.JWT_SECRET){
+            throw new Error('No se encontro el JWT_SECRET');
+        }
+
+        const response= await fetch(`${process.env.CONFIG_API_URL}/api/configuracion/CHATBOT_BASE_PROMPT`,
+            {
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json',
+                    'x-chatbot-jwt-secre':`${process.env.JWT_SECRET}`
+                }
+            }
+        )
+
+        if(!response.ok){
+            throw new Error('No se pudo obtener el prompt base');
+        }
+
+        const data = await response.json();
+        return data.value;
+    }
+
     async generateResponse(prompt: string): Promise<string> {
         try {
             const result = await this.model.generateContent(prompt);
@@ -91,7 +120,16 @@ Sigue estas reglas estrictamente. No te desvíes de ellas.
         fecha:string
     }[]):Promise<string>{
         try{
-        const prompt = this.initialPrompt.replace('{{messages}}', JSON.stringify(messages));
+            
+        let basePrompt =this.initialPrompt
+
+        try {
+            basePrompt = await this.fetchBasePrompt();
+        } catch (error) {
+            console.error('Error al obtener el prompt base:', error);
+        }
+
+        const prompt = basePrompt.replace('{{messages}}', JSON.stringify(messages));
         const response = await this.model.generateContent(prompt);
         return response.response.text();
     }catch(error){
