@@ -90,17 +90,16 @@ Sigue estas reglas estrictamente. No te desvíes de ellas.
                 method:'GET',
                 headers:{
                     'Content-Type':'application/json',
-                    'x-chatbot-jwt-secre':`${process.env.JWT_SECRET}`
+                    'x-chatbot-jwt-secret':`${process.env.JWT_SECRET}`
                 }
             }
         )
-
         if(!response.ok){
             throw new Error('No se pudo obtener el prompt base');
         }
 
         const data = await response.json();
-        return data.value;
+        return data.data.value;
     }
 
     async generateResponse(prompt: string): Promise<string> {
